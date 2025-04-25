@@ -48,11 +48,17 @@ export default function Deudas() {
   });
 
   const columns: GridColDef[] = [
-    { field: "ID", headerName: "ID", width: 90 },
+    {
+      field: "ID",
+      headerName: "ID",
+      flex: 0.5,
+      minWidth: 70,
+    },
     {
       field: "MontoDeuda",
       headerName: "Monto",
-      width: 130,
+      flex: 1,
+      minWidth: 120,
       valueFormatter: (params) => {
         return params ? `$${Number(params).toFixed(2)}` : "$0.00";
       },
@@ -60,7 +66,8 @@ export default function Deudas() {
     {
       field: "FechaVencimientoDeuda",
       headerName: "Fecha Vencimiento",
-      width: 200,
+      flex: 1.2,
+      minWidth: 180,
       valueFormatter: (params) => {
         return params ? new Date(params).toLocaleDateString() : "";
       },
@@ -68,17 +75,16 @@ export default function Deudas() {
     {
       field: "NombreCompleto",
       headerName: "Usuario",
-      width: 200,
-      valueGetter: (params) => {
-        return params;
-      },
+      flex: 1.5,
+      minWidth: 200,
     },
     {
       field: "actions",
       headerName: "Acciones",
-      width: 120,
-      renderCell: (params: GridRenderCellParams) => (
-        <Box>
+      flex: 0.8,
+      minWidth: 120,
+      renderCell: (params: GridRenderCellParams<Deuda>) => (
+        <Box sx={{ display: "flex", gap: 1 }}>
           <IconButton
             onClick={() => handleEdit(params.row)}
             color="primary"
@@ -176,7 +182,7 @@ export default function Deudas() {
           </Button>
         </Box>
 
-        <Box sx={{ height: "calc(100vh - 200px)", width: "100%" }}>
+        <Box sx={{ width: "100%" }}>
           <DataGrid
             rows={deudas}
             columns={columns}
@@ -190,6 +196,20 @@ export default function Deudas() {
             sx={{
               "& .MuiDataGrid-cell:focus": {
                 outline: "none",
+              },
+              "& .MuiDataGrid-columnHeader": {
+                backgroundColor: (theme) => theme.palette.primary.light,
+                color: "white",
+                fontWeight: "bold",
+              },
+              "& .MuiDataGrid-row:nth-of-type(even)": {
+                backgroundColor: (theme) => theme.palette.action.hover,
+              },
+              "& .MuiDataGrid-cell": {
+                borderRight: "1px solid rgba(224, 224, 224, 0.2)",
+              },
+              "& .MuiDataGrid-columnHeaders": {
+                borderBottom: "2px solid rgba(224, 224, 224, 0.4)",
               },
             }}
           />

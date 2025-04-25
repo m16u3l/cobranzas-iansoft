@@ -16,19 +16,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { UsuarioForm } from "@/components/usuarios/UsuarioForm";
 import { useUsuarios } from "@/hooks/useUsuarios";
 import { Usuario, UsuarioFormData } from "@/types/usuario";
-
-export function ErrorBoundary({ error }: { error: Error }) {
-  return (
-    <Box
-      sx={{
-        p: 3,
-        textAlign: "center",
-      }}
-    >
-      <Typography color="error">Error: {error.message}</Typography>
-    </Box>
-  );
-}
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 function LoadingState() {
   return (
@@ -40,8 +28,14 @@ function LoadingState() {
 }
 
 export default function Usuarios() {
-  const { usuarios, isLoading, error, fetchUsuarios, saveUsuario, deleteUsuario } =
-    useUsuarios();
+  const {
+    usuarios,
+    isLoading,
+    error,
+    fetchUsuarios,
+    saveUsuario,
+    deleteUsuario,
+  } = useUsuarios();
   const [openDialog, setOpenDialog] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<UsuarioFormData>({
@@ -90,7 +84,7 @@ export default function Usuarios() {
   });
 
   if (error) {
-    return <ErrorBoundary error={error} />;
+    return <ErrorBoundary error={error} reset={fetchUsuarios} />;
   }
 
   if (isLoading && !usuarios.length) {
@@ -119,7 +113,7 @@ export default function Usuarios() {
           </Button>
         </Box>
 
-        <Box sx={{ height: 400, width: "100%" }}>
+        <Box sx={{ width: "100%" }}>
           <DataGrid
             rows={usuarios}
             columns={columns}
@@ -133,6 +127,13 @@ export default function Usuarios() {
             sx={{
               "& .MuiDataGrid-cell:focus": {
                 outline: "none",
+              },
+              "& .MuiDataGrid-columnHeader": {
+                backgroundColor: (theme) => theme.palette.primary.light,
+                color: "white",
+              },
+              "& .MuiDataGrid-row:nth-of-type(even)": {
+                backgroundColor: (theme) => theme.palette.action.hover,
               },
             }}
           />
@@ -159,16 +160,37 @@ function useUsuariosColumns({
   onDelete: (id: number) => void;
 }): GridColDef[] {
   return [
-    { field: "ID", headerName: "ID", width: 90 },
-    { field: "Nombre", headerName: "Nombre", width: 130 },
-    { field: "Apellidos", headerName: "Apellidos", width: 200 },
-    { field: "Correo", headerName: "Correo", width: 200 },
+    {
+      field: "ID",
+      headerName: "ID",
+      flex: 0.5,
+      minWidth: 90,
+    },
+    {
+      field: "Nombre",
+      headerName: "Nombre",
+      flex: 1,
+      minWidth: 130,
+    },
+    {
+      field: "Apellidos",
+      headerName: "Apellidos",
+      flex: 1,
+      minWidth: 200,
+    },
+    {
+      field: "Correo",
+      headerName: "Correo",
+      flex: 1.5,
+      minWidth: 200,
+    },
     {
       field: "actions",
       headerName: "Acciones",
-      width: 120,
+      flex: 0.7,
+      minWidth: 120,
       renderCell: (params: GridRenderCellParams) => (
-        <Box>
+        <Box sx={{ display: "flex", gap: 1 }}>
           <IconButton
             onClick={() => onEdit(params.row)}
             color="primary"

@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button } from "@mui/material";
 
 interface ErrorBoundaryProps {
   error: Error;
@@ -12,9 +12,9 @@ export function ErrorBoundary({ error, reset }: ErrorBoundaryProps) {
     <Box
       sx={{
         p: 3,
-        textAlign: 'center',
-        display: 'flex',
-        flexDirection: 'column',
+        textAlign: "center",
+        display: "flex",
+        flexDirection: "column",
         gap: 2,
       }}
     >
