@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 import {
   Box,
   Button,
-  Container,
   IconButton,
   Typography,
   Paper,
+  Skeleton,
 } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import AddIcon from "@mui/icons-material/Add";
@@ -17,8 +17,30 @@ import { UsuarioForm } from "@/components/usuarios/UsuarioForm";
 import { useUsuarios } from "@/hooks/useUsuarios";
 import { Usuario, UsuarioFormData } from "@/types/usuario";
 
+export function ErrorBoundary({ error }: { error: Error }) {
+  return (
+    <Box
+      sx={{
+        p: 3,
+        textAlign: "center",
+      }}
+    >
+      <Typography color="error">Error: {error.message}</Typography>
+    </Box>
+  );
+}
+
+function LoadingState() {
+  return (
+    <Box sx={{ width: "100%", p: 3 }}>
+      <Skeleton height={40} sx={{ mb: 2 }} />
+      <Skeleton height={400} />
+    </Box>
+  );
+}
+
 export default function Usuarios() {
-  const { usuarios, isLoading, fetchUsuarios, saveUsuario, deleteUsuario } =
+  const { usuarios, isLoading, error, fetchUsuarios, saveUsuario, deleteUsuario } =
     useUsuarios();
   const [openDialog, setOpenDialog] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -67,8 +89,16 @@ export default function Usuarios() {
     onDelete: handleDelete,
   });
 
+  if (error) {
+    return <ErrorBoundary error={error} />;
+  }
+
+  if (isLoading && !usuarios.length) {
+    return <LoadingState />;
+  }
+
   return (
-    <Container maxWidth="lg" sx={{ mt: 4 }}>
+    <Box sx={{ width: "100%", height: "100%" }}>
       <Paper sx={{ p: 3 }}>
         <Box
           display="flex"
@@ -89,18 +119,24 @@ export default function Usuarios() {
           </Button>
         </Box>
 
-        <DataGrid
-          rows={usuarios}
-          columns={columns}
-          getRowId={(row) => row.ID}
-          initialState={{
-            pagination: { paginationModel: { pageSize: 10 } },
-          }}
-          pageSizeOptions={[5, 10, 25]}
-          disableRowSelectionOnClick
-          autoHeight
-          loading={isLoading}
-        />
+        <Box sx={{ height: 400, width: "100%" }}>
+          <DataGrid
+            rows={usuarios}
+            columns={columns}
+            getRowId={(row) => row.ID}
+            initialState={{
+              pagination: { paginationModel: { pageSize: 10 } },
+            }}
+            pageSizeOptions={[5, 10, 25]}
+            disableRowSelectionOnClick
+            loading={isLoading}
+            sx={{
+              "& .MuiDataGrid-cell:focus": {
+                outline: "none",
+              },
+            }}
+          />
+        </Box>
 
         <UsuarioForm
           open={openDialog}
@@ -111,7 +147,7 @@ export default function Usuarios() {
           onChange={handleFormChange}
         />
       </Paper>
-    </Container>
+    </Box>
   );
 }
 

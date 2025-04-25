@@ -1,12 +1,21 @@
-import { pool } from "@/config/db";
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
+import { pool } from '@/config/db';
 
 export async function GET() {
   try {
-    const [usuarios] = await pool.query("SELECT * FROM usuarios");
-    return NextResponse.json(usuarios);
+    const connection = await pool.getConnection();
+    try {
+      const [usuarios] = await connection.query('SELECT * FROM usuarios');
+      return NextResponse.json(usuarios);
+    } finally {
+      connection.release();
+    }
   } catch (error) {
-    return NextResponse.json({ message: error.message }, { status: 500 });
+    console.error('Database error:', error);
+    return NextResponse.json(
+      { error: 'Error interno del servidor' },
+      { status: 500 }
+    );
   }
 }
 

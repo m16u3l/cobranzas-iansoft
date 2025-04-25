@@ -3,18 +3,22 @@ import { Usuario, UsuarioFormData } from "@/types/usuario";
 
 export function useUsuarios() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   const fetchUsuarios = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await fetch("/api/usuarios");
+      setError(null);
+      const response = await fetch('/api/usuarios');
+      if (!response.ok) {
+        throw new Error('Error al cargar usuarios');
+      }
       const data = await response.json();
       setUsuarios(data);
-    } catch (error) {
-      setError("Error al cargar usuarios");
-      console.error("Error fetching usuarios:", error);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Error desconocido'));
+      console.error('Error fetching usuarios:', err);
     } finally {
       setIsLoading(false);
     }

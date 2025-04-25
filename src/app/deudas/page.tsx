@@ -4,43 +4,44 @@ import { useState, useEffect } from "react";
 import {
   Box,
   Button,
-  Container,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  IconButton,
-  TextField,
   Typography,
   Paper,
-  MenuItem,
+  Skeleton,
+  IconButton,
 } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import AddIcon from "@mui/icons-material/Add";
+import { DeudaForm } from "@/components/deudas/DeudaForm";
+import { useDeudas } from "@/hooks/useDeudas";
+import { Deuda, DeudaFormData } from "@/types/deuda";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-interface Deuda {
-  ID: number;
-  MontoDeuda: number;
-  FechaVencimientoDeuda: string;
-  UsuarioID: number;
-  Nombre?: string;
-  Apellidos?: string;
-}
-
-interface Usuario {
-  ID: number;
-  Nombre: string;
-  Apellidos: string;
+function LoadingState() {
+  return (
+    <Box sx={{ width: "100%", p: 3 }}>
+      <Skeleton height={40} sx={{ mb: 2 }} />
+      <Skeleton height={400} />
+    </Box>
+  );
 }
 
 export default function Deudas() {
-  const [deudas, setDeudas] = useState<Deuda[]>([]);
-  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  const {
+    deudas,
+    usuarios,
+    isLoading,
+    error,
+    fetchDeudas,
+    fetchUsuarios,
+    saveDeuda,
+    deleteDeuda,
+  } = useDeudas();
+
   const [openDialog, setOpenDialog] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState<Partial<Deuda>>({
+  const [formData, setFormData] = useState<DeudaFormData>({
     MontoDeuda: 0,
     FechaVencimientoDeuda: new Date().toISOString().split("T")[0],
     UsuarioID: 0,
@@ -100,56 +101,18 @@ export default function Deudas() {
   useEffect(() => {
     fetchDeudas();
     fetchUsuarios();
-  }, []);
-
-  const fetchDeudas = async () => {
-    try {
-      const response = await fetch("/api/deudas");
-      const data = await response.json();
-      const formattedData = data.map((deuda: Deuda) => ({
-        ...deuda,
-        MontoDeuda: Number(deuda.MontoDeuda),
-        NombreCompleto: deuda.Nombre + " " + deuda.Apellidos,
-      }));
-      setDeudas(formattedData);
-    } catch (error) {
-      console.error("Error fetching deudas:", error);
-    }
-  };
-
-  const fetchUsuarios = async () => {
-    try {
-      const response = await fetch("/api/usuarios");
-      const data = await response.json();
-      setUsuarios(data);
-    } catch (error) {
-      console.error("Error fetching usuarios:", error);
-    }
-  };
+  }, [fetchDeudas, fetchUsuarios]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const url = isEditing ? `/api/deudas/${formData.ID}` : "/api/deudas";
-      const method = isEditing ? "PUT" : "POST";
-
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          MontoDeuda: Number(formData.MontoDeuda),
-          UsuarioID: Number(formData.UsuarioID),
-        }),
-      });
-
-      if (response.ok) {
+      const success = await saveDeuda(formData, isEditing);
+      if (success) {
         setOpenDialog(false);
-        fetchDeudas();
         resetForm();
       }
     } catch (error) {
-      console.error("Error saving deuda:", error);
+      console.error("Error al guardar deuda:", error);
     }
   };
 
@@ -167,14 +130,9 @@ export default function Deudas() {
   const handleDelete = async (id: number) => {
     if (confirm("¿Está seguro de eliminar esta deuda?")) {
       try {
-        const response = await fetch(`/api/deudas/${id}`, {
-          method: "DELETE",
-        });
-        if (response.ok) {
-          fetchDeudas();
-        }
+        await deleteDeuda(id);
       } catch (error) {
-        console.error("Error deleting deuda:", error);
+        console.error("Error al eliminar deuda:", error);
       }
     }
   };
@@ -188,8 +146,16 @@ export default function Deudas() {
     setIsEditing(false);
   };
 
+  if (error) {
+    return <ErrorBoundary error={error} reset={fetchDeudas} />;
+  }
+
+  if (isLoading && !deudas.length) {
+    return <LoadingState />;
+  }
+
   return (
-    <Container maxWidth="lg" sx={{ mt: 4 }}>
+    <Box sx={{ width: "100%", height: "100%" }}>
       <Paper sx={{ p: 3 }}>
         <Box
           display="flex"
@@ -210,89 +176,37 @@ export default function Deudas() {
           </Button>
         </Box>
 
-        <DataGrid
-          rows={deudas}
-          columns={columns}
-          getRowId={(row) => row.ID}
-          initialState={{
-            pagination: { paginationModel: { pageSize: 10 } },
-          }}
-          pageSizeOptions={[5, 10, 25]}
-          disableRowSelectionOnClick
-          autoHeight
-        />
+        <Box sx={{ height: "calc(100vh - 200px)", width: "100%" }}>
+          <DataGrid
+            rows={deudas}
+            columns={columns}
+            getRowId={(row) => row.ID}
+            initialState={{
+              pagination: { paginationModel: { pageSize: 10 } },
+            }}
+            pageSizeOptions={[5, 10, 25]}
+            disableRowSelectionOnClick
+            loading={isLoading}
+            sx={{
+              "& .MuiDataGrid-cell:focus": {
+                outline: "none",
+              },
+            }}
+          />
+        </Box>
 
-        <Dialog
+        <DeudaForm
           open={openDialog}
+          isEditing={isEditing}
+          formData={formData}
+          usuarios={usuarios}
           onClose={() => setOpenDialog(false)}
-          maxWidth="sm"
-          fullWidth
-        >
-          <form onSubmit={handleSubmit}>
-            <DialogTitle>
-              {isEditing ? "Editar Deuda" : "Nueva Deuda"}
-            </DialogTitle>
-            <DialogContent>
-              <TextField
-                select
-                fullWidth
-                label="Usuario"
-                value={formData.UsuarioID || ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    UsuarioID: Number(e.target.value),
-                  })
-                }
-                margin="normal"
-                required
-              >
-                {usuarios.map((usuario) => (
-                  <MenuItem key={usuario.ID} value={usuario.ID}>
-                    {usuario.Nombre} {usuario.Apellidos}
-                  </MenuItem>
-                ))}
-              </TextField>
-              <TextField
-                fullWidth
-                label="Monto"
-                type="number"
-                value={formData.MontoDeuda}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    MontoDeuda: Number(e.target.value),
-                  })
-                }
-                margin="normal"
-                required
-                inputProps={{ step: "0.01", min: "0" }}
-              />
-              <TextField
-                fullWidth
-                label="Fecha de Vencimiento"
-                type="date"
-                value={formData.FechaVencimientoDeuda}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    FechaVencimientoDeuda: e.target.value,
-                  })
-                }
-                margin="normal"
-                required
-                InputLabelProps={{ shrink: true }}
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setOpenDialog(false)}>Cancelar</Button>
-              <Button type="submit" variant="contained">
-                {isEditing ? "Actualizar" : "Crear"}
-              </Button>
-            </DialogActions>
-          </form>
-        </Dialog>
+          onSubmit={handleSubmit}
+          onChange={(field, value) =>
+            setFormData((prev) => ({ ...prev, [field]: value }))
+          }
+        />
       </Paper>
-    </Container>
+    </Box>
   );
 }
