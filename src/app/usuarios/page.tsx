@@ -22,7 +22,7 @@ import { useUsuarios } from '@/hooks/useUsuarios';
 import { Usuario, UsuarioFormData } from '@/types/usuario';
 
 export default function Usuarios() {
-  const { usuarios, isLoading, error, fetchUsuarios, saveUsuario, deleteUsuario } = useUsuarios();
+  const { usuarios, isLoading, fetchUsuarios, saveUsuario, deleteUsuario } = useUsuarios();
   const [openDialog, setOpenDialog] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<UsuarioFormData>({
