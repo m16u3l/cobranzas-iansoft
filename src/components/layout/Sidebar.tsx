@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Drawer,
@@ -8,18 +8,18 @@ import {
   ListItemText,
   Typography,
   Box,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import PeopleIcon from '@mui/icons-material/People';
-import MoneyIcon from '@mui/icons-material/Money';
-import HomeIcon from '@mui/icons-material/Home';
-import Link from 'next/link';
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import PeopleIcon from "@mui/icons-material/People";
+import MoneyIcon from "@mui/icons-material/Money";
+import HomeIcon from "@mui/icons-material/Home";
+import Link from "next/link";
 
-const DrawerHeader = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
+const DrawerHeader = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
   padding: theme.spacing(2),
-  justifyContent: 'center',
+  justifyContent: "center",
   backgroundColor: theme.palette.primary.main,
   color: theme.palette.primary.contrastText,
 }));
@@ -28,9 +28,9 @@ const DRAWER_WIDTH = 240;
 
 export function Sidebar() {
   const menuItems = [
-    { text: 'Inicio', icon: <HomeIcon />, href: '/' },
-    { text: 'Usuarios', icon: <PeopleIcon />, href: '/usuarios' },
-    { text: 'Deudas', icon: <MoneyIcon />, href: '/deudas' },
+    { text: "Inicio", icon: <HomeIcon />, href: "/" },
+    { text: "Usuarios", icon: <PeopleIcon />, href: "/usuarios" },
+    { text: "Deudas", icon: <MoneyIcon />, href: "/deudas" },
   ];
 
   return (
@@ -40,9 +40,9 @@ export function Sidebar() {
         sx={{
           width: DRAWER_WIDTH,
           flexShrink: 0,
-          '& .MuiDrawer-paper': {
+          "& .MuiDrawer-paper": {
             width: DRAWER_WIDTH,
-            boxSizing: 'border-box',
+            boxSizing: "border-box",
           },
         }}
       >
@@ -56,8 +56,8 @@ export function Sidebar() {
               component={Link}
               href={item.href}
               sx={{
-                '&:hover': {
-                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.04)",
                 },
               }}
             >

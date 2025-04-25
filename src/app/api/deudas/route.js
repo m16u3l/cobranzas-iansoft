@@ -10,30 +10,25 @@ export async function GET() {
     `);
     return NextResponse.json(deudas);
   } catch (error) {
-    return NextResponse.json(
-      { message: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }
 
 export async function POST(request) {
   try {
-    const { MontoDeuda, FechaVencimientoDeuda, UsuarioID } = await request.json();
+    const { MontoDeuda, FechaVencimientoDeuda, UsuarioID } =
+      await request.json();
     const [result] = await pool.query(
       "INSERT INTO deudas (MontoDeuda, FechaVencimientoDeuda, UsuarioID) VALUES (?, ?, ?)",
       [MontoDeuda, FechaVencimientoDeuda, UsuarioID]
     );
-    return NextResponse.json({ 
-      ID: result.insertId, 
-      MontoDeuda, 
-      FechaVencimientoDeuda, 
-      UsuarioID 
+    return NextResponse.json({
+      ID: result.insertId,
+      MontoDeuda,
+      FechaVencimientoDeuda,
+      UsuarioID,
     });
   } catch (error) {
-    return NextResponse.json(
-      { message: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }

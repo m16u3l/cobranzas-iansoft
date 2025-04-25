@@ -6,10 +6,7 @@ export async function GET() {
     const [usuarios] = await pool.query("SELECT * FROM usuarios");
     return NextResponse.json(usuarios);
   } catch (error) {
-    return NextResponse.json(
-      { message: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }
 
@@ -20,11 +17,13 @@ export async function POST(request) {
       "INSERT INTO usuarios (Nombre, Apellidos, Correo) VALUES (?, ?, ?)",
       [Nombre, Apellidos, Correo]
     );
-    return NextResponse.json({ id: result.insertId, Nombre, Apellidos, Correo });
+    return NextResponse.json({
+      id: result.insertId,
+      Nombre,
+      Apellidos,
+      Correo,
+    });
   } catch (error) {
-    return NextResponse.json(
-      { message: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }
