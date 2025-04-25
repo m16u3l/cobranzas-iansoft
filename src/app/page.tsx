@@ -8,12 +8,9 @@ import {
   Grid,
   Card,
   CardContent,
-  CardHeader,
-  Icon,
 } from '@mui/material';
 import SecurityIcon from '@mui/icons-material/Security';
 import SpeedIcon from '@mui/icons-material/Speed';
-import SupportIcon from '@mui/icons-material/Support';
 
 const features = [
   {
@@ -26,72 +23,120 @@ const features = [
     description: 'Optimización de procesos de cobranza para maximizar resultados.',
     icon: <SpeedIcon fontSize="large" color="primary" />,
   },
-  {
-    title: 'Soporte 24/7',
-    description: 'Asistencia técnica y soporte continuo para nuestros clientes.',
-    icon: <SupportIcon fontSize="large" color="primary" />,
-  },
 ];
 
 export default function Home() {
   return (
-    <Container maxWidth="lg" sx={{ mt: 4 }}>
+    <Container 
+      maxWidth="lg" 
+      sx={{ 
+        py: 4,
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
       <Paper 
         elevation={0} 
         sx={{ 
-          p: 5, 
+          width: '100%',
+          p: { xs: 2, sm: 3, md: 5 }, 
           textAlign: 'center',
-          background: 'transparent'
+          background: 'transparent',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 4,
         }}
       >
-        <Typography 
-          variant="h2" 
-          component="h1" 
-          gutterBottom
+        <Box sx={{ mb: 6 }}>
+          <Typography 
+            variant="h2" 
+            component="h1" 
+            gutterBottom
+            sx={{ 
+              fontWeight: 'bold',
+              color: 'primary.main',
+              fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' }
+            }}
+          >
+            IanSoft
+          </Typography>
+          <Typography 
+            variant="h5" 
+            component="h2" 
+            color="textSecondary"
+            sx={{ 
+              maxWidth: '800px',
+              mx: 'auto',
+              fontSize: { xs: '1.2rem', sm: '1.5rem' }
+            }}
+          >
+            Soluciones Inteligentes para Gestión de Cobranzas
+          </Typography>
+        </Box>
+
+        <Grid 
+          container 
+          spacing={{ xs: 2, md: 4 }} 
           sx={{ 
-            fontWeight: 'bold',
-            color: 'primary.main' 
+            mb: { xs: 4, md: 6 },
+            justifyContent: 'center' // Center cards horizontally
           }}
         >
-          IanSoft
-        </Typography>
-        <Typography 
-          variant="h5" 
-          component="h2" 
-          color="textSecondary" 
-          paragraph
-          sx={{ mb: 6 }}
-        >
-          Soluciones Inteligentes para Gestión de Cobranzas
-        </Typography>
-
-        <Grid container spacing={4} sx={{ mb: 6 }}>
           {features.map((feature) => (
-            <Grid item xs={12} md={4} key={feature.title}>
+            <Grid component={Box} key={feature.title}>
               <Card 
                 elevation={2}
                 sx={{ 
-                  height: '100%',
+                  width: 300, // Fixed width
+                  height: 280, // Fixed height
                   display: 'flex',
                   flexDirection: 'column',
+                  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
                   '&:hover': {
                     transform: 'translateY(-5px)',
-                    transition: 'transform 0.3s ease-in-out',
+                    boxShadow: (theme) => theme.shadows[8],
                   },
                 }}
               >
-                <CardContent sx={{ textAlign: 'center', flexGrow: 1 }}>
-                  <Box sx={{ mb: 2 }}>
+                <CardContent sx={{ 
+                  textAlign: 'center', 
+                  flexGrow: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 2,
+                  p: 3,
+                  justifyContent: 'center', // Center content vertically
+                }}>
+                  <Box sx={{ 
+                    mb: 2,
+                    '& .MuiSvgIcon-root': { // Make icons bigger
+                      fontSize: '3rem'
+                    }
+                  }}>
                     {feature.icon}
                   </Box>
                   <Typography 
                     variant="h6" 
-                    component="h3" 
-                    gutterBottom
+                    component="h3"
+                    sx={{ fontWeight: 'bold' }}
                   >
                     {feature.title}
                   </Typography>
-                  <Typography variant="body1" color="textSecondary">
+                  <Typography 
+                    variant="body1" 
+                    color="textSecondary"
+                    sx={{ 
+                      lineHeight: 1.6,
+                      // Ensure text doesn't overflow
+                      overflow: 'hidden',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: 'vertical',
+                    }}
+                  >
                     {feature.description}
                   </Typography>
                 </CardContent>
@@ -100,11 +145,34 @@ export default function Home() {
           ))}
         </Grid>
 
-        <Box sx={{ mt: 8, p: 4, bgcolor: 'primary.main', color: 'white', borderRadius: 2 }}>
-          <Typography variant="h4" gutterBottom>
+        <Box sx={{ 
+          mt: { xs: 4, md: 8 }, 
+          p: { xs: 3, md: 4 }, 
+          bgcolor: 'primary.main', 
+          color: 'white', 
+          borderRadius: 2,
+          maxWidth: '1000px',
+          mx: 'auto',
+        }}>
+          <Typography 
+            variant="h4" 
+            gutterBottom
+            sx={{ 
+              fontWeight: 'bold',
+              fontSize: { xs: '1.5rem', sm: '2rem' }
+            }}
+          >
             Sobre Nosotros
           </Typography>
-          <Typography variant="body1" paragraph>
+          <Typography 
+            variant="body1" 
+            sx={{ 
+              maxWidth: '800px',
+              mx: 'auto',
+              lineHeight: 1.8,
+              fontSize: { xs: '1rem', sm: '1.1rem' }
+            }}
+          >
             IanSoft es una empresa líder en el desarrollo de soluciones tecnológicas 
             para la gestión de cobranzas. Nuestro sistema permite a las empresas 
             optimizar sus procesos de recuperación de cartera, mantener un seguimiento 
