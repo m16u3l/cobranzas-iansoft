@@ -5,4 +5,4 @@ export interface Usuario {
   Correo: string;
 }
 
-export type UsuarioFormData = Omit<Usuario, 'ID'>;
+export type UsuarioFormData = Partial<Usuario>;
