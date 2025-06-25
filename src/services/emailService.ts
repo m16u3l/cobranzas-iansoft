@@ -1,26 +1,31 @@
 import nodemailer from 'nodemailer';
+console.log('Initializing email service...', process.env.SMTP_HOST, process.env.SMTP_PORT, process.env.EMAIL_USER);
 
 const transporter = nodemailer.createTransport({
-  host: 'smtp.ethereal.email',
-  port: 587,
+  host: process.env.SMTP_HOST || 'smtp.gmail.com',
+  port: Number(process.env.SMTP_PORT) || 465,
+  secure: true,
   auth: {
-    user: 'test@test.test',
-    pass: 'yourpassword'
-  }
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
+  },
 });
 
 export interface EmailParams {
+  to: string;
   subject: string;
   text: string;
+  html?: string;
 }
 
-export async function sendEmail({ subject, text }: EmailParams) {
+export async function sendEmail({ to, subject, text, html }: EmailParams) {
   try {
     const info = await transporter.sendMail({
-      from: 'test@test.test',
-      to: 'test2@test.test',
+      from: `"Sistema de Cobranzas" <${process.env.EMAIL_USER}>`,
+      to,
       subject,
       text,
+      html: html || text,
     });
     return { success: true, messageId: info.messageId };
   } catch (error) {

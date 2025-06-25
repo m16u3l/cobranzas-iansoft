@@ -1,47 +1,51 @@
 import { NextResponse } from "next/server";
 import cron from "node-cron";
-import { pool } from "@/config/db";
+import { sendEmail } from "@/services/emailService";
+import { getConfiguration, getExpiringDebts } from "@/services/deudaService";
+import { createDebtEmailTemplate } from "@/services/emailTemplates";
 
 let cronInitialized = false;
 
-async function verificarDeudas() {
-  const connection = await pool.getConnection();
-  try {
-    const [config] = await connection.query<any[]>(
-      "SELECT DiasRestantesParaCobroDeuda, DiaDeNotificacion, HoraDeNotificacion FROM configuracion LIMIT 1"
-    );
+function getCronExpression() {
+  return process.env.CRON_EXPRESSION || '0 9 * * 1';
+}
 
-    console.log(config[0]);
-    
-    const diasRestantes = config[0]?.DiasRestantesParaCobroDeuda || 30;
-    const [deudas] = await connection.query(
-      `SELECT 
-        d.*,
-        u.Correo,
-        u.Nombre,
-        u.Apellidos,
-        DATEDIFF(d.FechaVencimientoDeuda, CURDATE()) as DiasRestantes
-      FROM deudas d 
-      JOIN usuarios u ON d.UsuarioID = u.ID 
-      WHERE 
-        (DATEDIFF(d.FechaVencimientoDeuda, CURDATE()) <= ? AND DATEDIFF(d.FechaVencimientoDeuda, CURDATE()) >= 0)
-        OR d.FechaVencimientoDeuda < CURDATE()
-      ORDER BY d.FechaVencimientoDeuda ASC`,
-      [diasRestantes]
-    );
+async function verificarDeudas() {
+  try {
+    const diasRestantes = await getConfiguration();
+    const deudas = await getExpiringDebts(diasRestantes);
 
     console.log("Deudas por vencer o vencidas encontradas:", deudas);
+
+    for (const deuda of deudas) {
+      const { htmlContent, textContent } = createDebtEmailTemplate(deuda);
+
+      await sendEmail({
+        to: deuda.Correo,
+        subject: deuda.DiasRestantes < 0 
+          ? "Notificación de Deuda Vencida" 
+          : "Recordatorio de Deuda por Vencer",
+        text: textContent,
+        html: htmlContent
+      });
+
+      console.log(`Correo enviado a ${deuda.Correo} para la deuda ID: ${deuda.ID}`);
+    }
     return deudas;
-  } finally {
-    connection.release();
+  } catch (error) {
+    console.error("Error al procesar deudas:", error);
+    throw error;
   }
 }
 
 export async function GET() {
   if (!cronInitialized) {
-    cron.schedule("* * * * *", async () => {
+    const cronExpression = getCronExpression();
+    console.log(`Configurando cron job con la expresión: ${cronExpression}`);
+    
+    cron.schedule(cronExpression, async () => {
       try {
-        console.log("Ejecutando verificación de deudas vencidas...");
+        console.log('Ejecutando verificación de deudas...');
         await verificarDeudas();
       } catch (error) {
         console.error("Error en cron job:", error);
@@ -51,12 +55,12 @@ export async function GET() {
     cronInitialized = true;
     return NextResponse.json({
       success: true,
-      message: "Cron jobs iniciados",
+      message: "Cron jobs iniciados"
     });
   }
 
   return NextResponse.json({
     success: true,
-    message: "Cron jobs ya están ejecutándose",
+    message: "Cron jobs ya están ejecutándose"
   });
 }
