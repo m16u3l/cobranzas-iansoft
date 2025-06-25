@@ -27,6 +27,28 @@ function LoadingState() {
   );
 }
 
+function CustomNoRowsOverlay() {
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100%",
+        p: 2,
+      }}
+    >
+      <Typography variant="h6" color="text.secondary">
+        No hay usuarios registrados
+      </Typography>
+      <Typography variant="body2" color="text.secondary">
+        Agregue un nuevo usuario usando el botón "Nuevo Usuario"
+      </Typography>
+    </Box>
+  );
+}
+
 export default function Usuarios() {
   const {
     usuarios,
@@ -124,6 +146,9 @@ export default function Usuarios() {
             pageSizeOptions={[5, 10, 25]}
             disableRowSelectionOnClick
             loading={isLoading}
+            slots={{
+              noRowsOverlay: CustomNoRowsOverlay,
+            }}
             sx={{
               "& .MuiDataGrid-cell:focus": {
                 outline: "none",
@@ -134,6 +159,9 @@ export default function Usuarios() {
               },
               "& .MuiDataGrid-row:nth-of-type(even)": {
                 backgroundColor: (theme) => theme.palette.action.hover,
+              },
+              "& .MuiDataGrid-overlay": {
+                backgroundColor: "transparent",
               },
             }}
           />

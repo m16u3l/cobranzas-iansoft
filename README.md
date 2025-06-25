@@ -20,33 +20,36 @@ CREATE DATABASE cobranzas_db;
 2. Crear las tablas necesarias:
 ```sql
 -- Tabla de Configuración
-CREATE TABLE Configuracion (
+CREATE TABLE configuracion (
   ID int NOT NULL AUTO_INCREMENT,
   DiasRestantesParaCobroDeuda int DEFAULT NULL,
   PRIMARY KEY (ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+INSERT INTO configuracion (ID, DiasRestantesParaCobroDeuda) 
+VALUES (1, 5);
+
 -- Tabla de Usuarios
-CREATE TABLE usuarios (
-  ID int NOT NULL AUTO_INCREMENT,
-  Nombre varchar(50) NOT NULL,
-  Apellidos varchar(100) NOT NULL,
-  Correo varchar(100) NOT NULL,
-  PRIMARY KEY (ID),
-  UNIQUE KEY Correo (Correo)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `usuarios` (
+  `ID` int NOT NULL AUTO_INCREMENT,
+  `Nombre` varchar(50) NOT NULL,
+  `Apellidos` varchar(100) NOT NULL,
+  `Correo` varchar(100) NOT NULL,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `Correo` (`Correo`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Tabla de Deudas
 CREATE TABLE deudas (
-  ID int NOT NULL AUTO_INCREMENT,
-  MontoDeuda decimal(10,2) NOT NULL,
-  FechaVencimientoDeuda date NOT NULL,
-  UsuarioID int NOT NULL,
-  LinkDeCobro varchar(100) DEFAULT NULL,
-  PRIMARY KEY (ID),
-  KEY UsuarioID (UsuarioID),
-  CONSTRAINT deudas_ibfk_1 FOREIGN KEY (UsuarioID) REFERENCES usuarios (ID) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `ID` int NOT NULL AUTO_INCREMENT,
+  `MontoDeuda` decimal(10,2) NOT NULL,
+  `FechaVencimientoDeuda` date NOT NULL,
+  `UsuarioID` int NOT NULL,
+  `LinkDeCobro` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`ID`),
+  KEY `UsuarioID` (`UsuarioID`),
+  CONSTRAINT `deudas_ibfk_1` FOREIGN KEY (`UsuarioID`) REFERENCES usuarios (`ID`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 ```
 
 ### Variables de Entorno
@@ -114,7 +117,7 @@ npm run dev
 El sistema utiliza un cron job para enviar notificaciones automáticas. La expresión por defecto `* * * * *` ejecuta la tarea cada minuto. 
 
 Ejemplos de configuración:
-- `0 9 * * 1`: Todos los lunes a las 9 AM
+- `0 9 * * 1`: Todos los lunes a las 9 AM (por defecto)
 - `0 9 * * *`: Todos los días a las 9 AM
 - `0 9 1 * *`: El día 1 de cada mes a las 9 AM
 

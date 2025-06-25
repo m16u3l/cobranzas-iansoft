@@ -27,6 +27,28 @@ function LoadingState() {
   );
 }
 
+function CustomNoRowsOverlay() {
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100%",
+        p: 6,
+      }}
+    >
+      <Typography variant="h6" color="text.secondary">
+        No hay deudas registradas
+      </Typography>
+      <Typography variant="body2" color="text.secondary">
+        Agregue una nueva deuda usando el botón "Nueva Deuda"
+      </Typography>
+    </Box>
+  );
+}
+
 export default function Deudas() {
   const {
     deudas,
@@ -193,6 +215,9 @@ export default function Deudas() {
             pageSizeOptions={[5, 10, 25]}
             disableRowSelectionOnClick
             loading={isLoading}
+            slots={{
+              noRowsOverlay: CustomNoRowsOverlay,
+            }}
             sx={{
               "& .MuiDataGrid-cell:focus": {
                 outline: "none",
@@ -210,6 +235,9 @@ export default function Deudas() {
               },
               "& .MuiDataGrid-columnHeaders": {
                 borderBottom: "2px solid rgba(224, 224, 224, 0.4)",
+              },
+              "& .MuiDataGrid-overlay": {
+                backgroundColor: "transparent",
               },
             }}
           />
