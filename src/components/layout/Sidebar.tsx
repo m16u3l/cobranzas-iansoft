@@ -13,6 +13,7 @@ import { styled } from "@mui/material/styles";
 import PeopleIcon from "@mui/icons-material/People";
 import MoneyIcon from "@mui/icons-material/Money";
 import HomeIcon from "@mui/icons-material/Home";
+import EmailIcon from "@mui/icons-material/Email";
 import Link from "next/link";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -31,6 +32,7 @@ export function Sidebar() {
     { text: "Inicio", icon: <HomeIcon />, href: "/" },
     { text: "Usuarios", icon: <PeopleIcon />, href: "/usuarios" },
     { text: "Deudas", icon: <MoneyIcon />, href: "/deudas" },
+    { text: "Correo", icon: <EmailIcon />, href: "/email" },
   ];
 
   return (

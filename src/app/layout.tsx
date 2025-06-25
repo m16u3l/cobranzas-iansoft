@@ -4,6 +4,7 @@ import "./globals.css";
 import { Box, CssBaseline } from "@mui/material";
 import { Sidebar } from "@/components/layout/Sidebar";
 import ThemeRegistry from "@/components/ThemeRegistry/ThemeRegistry";
+import { CronInitializer } from "@/components/CronInitializer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +33,7 @@ export default function RootLayout({
       >
         <CssBaseline />
         <ThemeRegistry>
+          <CronInitializer />
           <Box sx={{ display: "flex", minHeight: "100vh" }}>
             <Sidebar />
             <Box

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { pool } from '@/config/db';
 
 export async function GET() {
+  console.log('Fetching usuarios from database');
   try {
     const connection = await pool.getConnection();
     try {
@@ -13,7 +14,7 @@ export async function GET() {
   } catch (error) {
     console.error('Database error:', error);
     return NextResponse.json(
-      { error: 'Error interno del servidor' },
+      { error: 'Error interno del sersssvidor' },
       { status: 500 }
     );
   }

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
+    console.log("Fetching deudas from database");
     const [deudas] = await pool.query(`
       SELECT d.*, u.Nombre, u.Apellidos 
       FROM deudas d 
