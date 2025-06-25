@@ -17,7 +17,37 @@ Este es un proyecto [Next.js](https://nextjs.org) para la gestión de cobranzas.
 CREATE DATABASE cobranzas_db;
 ```
 
-2. Ejecutar los scripts de migración (ubicados en `/sql/migrations`).
+2. Crear las tablas necesarias:
+```sql
+-- Tabla de Configuración
+CREATE TABLE Configuracion (
+  ID int NOT NULL AUTO_INCREMENT,
+  DiasRestantesParaCobroDeuda int DEFAULT NULL,
+  PRIMARY KEY (ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Tabla de Usuarios
+CREATE TABLE usuarios (
+  ID int NOT NULL AUTO_INCREMENT,
+  Nombre varchar(50) NOT NULL,
+  Apellidos varchar(100) NOT NULL,
+  Correo varchar(100) NOT NULL,
+  PRIMARY KEY (ID),
+  UNIQUE KEY Correo (Correo)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Tabla de Deudas
+CREATE TABLE deudas (
+  ID int NOT NULL AUTO_INCREMENT,
+  MontoDeuda decimal(10,2) NOT NULL,
+  FechaVencimientoDeuda date NOT NULL,
+  UsuarioID int NOT NULL,
+  LinkDeCobro varchar(100) DEFAULT NULL,
+  PRIMARY KEY (ID),
+  KEY UsuarioID (UsuarioID),
+  CONSTRAINT deudas_ibfk_1 FOREIGN KEY (UsuarioID) REFERENCES usuarios (ID) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+```
 
 ### Variables de Entorno
 

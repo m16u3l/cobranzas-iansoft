@@ -7,7 +7,7 @@ import { createDebtEmailTemplate } from "@/services/emailTemplates";
 let cronInitialized = false;
 
 function getCronExpression() {
-  return process.env.CRON_EXPRESSION || '0 9 * * 1';
+  return process.env.CRON_EXPRESSION || "0 9 * * 1";
 }
 
 async function verificarDeudas() {
@@ -22,14 +22,17 @@ async function verificarDeudas() {
 
       await sendEmail({
         to: deuda.Correo,
-        subject: deuda.DiasRestantes < 0 
-          ? "Notificación de Deuda Vencida" 
-          : "Recordatorio de Deuda por Vencer",
+        subject:
+          deuda.DiasRestantes < 0
+            ? "Notificación de Deuda Vencida"
+            : "Recordatorio de Deuda por Vencer",
         text: textContent,
-        html: htmlContent
+        html: htmlContent,
       });
 
-      console.log(`Correo enviado a ${deuda.Correo} para la deuda ID: ${deuda.ID}`);
+      console.log(
+        `Correo enviado a ${deuda.Correo} para la deuda ID: ${deuda.ID}`
+      );
     }
     return deudas;
   } catch (error) {
@@ -42,10 +45,10 @@ export async function GET() {
   if (!cronInitialized) {
     const cronExpression = getCronExpression();
     console.log(`Configurando cron job con la expresión: ${cronExpression}`);
-    
+
     cron.schedule(cronExpression, async () => {
       try {
-        console.log('Ejecutando verificación de deudas...');
+        console.log("Ejecutando verificación de deudas...");
         await verificarDeudas();
       } catch (error) {
         console.error("Error en cron job:", error);
@@ -55,12 +58,12 @@ export async function GET() {
     cronInitialized = true;
     return NextResponse.json({
       success: true,
-      message: "Cron jobs iniciados"
+      message: "Cron jobs iniciados",
     });
   }
 
   return NextResponse.json({
     success: true,
-    message: "Cron jobs ya están ejecutándose"
+    message: "Cron jobs ya están ejecutándose",
   });
 }

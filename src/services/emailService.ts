@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 console.log(
-  "Initializing email service...",
+  "Iniciando servicio de email...",
   process.env.SMTP_HOST,
   process.env.SMTP_PORT,
   process.env.EMAIL_USER
@@ -34,7 +34,7 @@ export async function sendEmail({ to, subject, text, html }: EmailParams) {
     });
     return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error("Error enviando email:", error);
     return { success: false, error };
   }
 }
