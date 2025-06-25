@@ -1,8 +1,13 @@
-import nodemailer from 'nodemailer';
-console.log('Initializing email service...', process.env.SMTP_HOST, process.env.SMTP_PORT, process.env.EMAIL_USER);
+import nodemailer from "nodemailer";
+console.log(
+  "Initializing email service...",
+  process.env.SMTP_HOST,
+  process.env.SMTP_PORT,
+  process.env.EMAIL_USER
+);
 
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
+  host: process.env.SMTP_HOST || "smtp.gmail.com",
   port: Number(process.env.SMTP_PORT) || 465,
   secure: true,
   auth: {
@@ -29,7 +34,7 @@ export async function sendEmail({ to, subject, text, html }: EmailParams) {
     });
     return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error("Error sending email:", error);
     return { success: false, error };
   }
 }

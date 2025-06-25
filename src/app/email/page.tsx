@@ -7,26 +7,24 @@ import {
   Typography,
   TextField,
   Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Alert,
   Snackbar,
+  CircularProgress,
 } from "@mui/material";
-import { useUsuarios } from "@/hooks/useUsuarios";
 
 export default function EmailPage() {
-  const { usuarios } = useUsuarios();
-  const [selectedUser, setSelectedUser] = useState("");
+  const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [severity, setSeverity] = useState<"success" | "error">("success");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
       const response = await fetch("/api/email", {
         method: "POST",
@@ -34,31 +32,35 @@ export default function EmailPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          usuarioId: selectedUser,
+          to: email,
           subject,
-          text: message,
+          message,
+          includePaymentLink: false, // opcional para incluir link de pago
         }),
       });
 
       const data = await response.json();
 
-      if (data.success) {
-        setSnackbarMessage("Correo enviado exitosamente");
-        setSeverity("success");
-        // Reset form
-        setSelectedUser("");
-        setSubject("");
-        setMessage("");
-      } else {
+      if (!response.ok) {
         throw new Error(data.error || "Error al enviar el correo");
       }
+
+      setSnackbarMessage("Correo enviado exitosamente");
+      setSeverity("success");
+      // Limpiar formulario
+      setEmail("");
+      setSubject("");
+      setMessage("");
     } catch (error) {
+      console.error("Error sending email:", error);
       setSnackbarMessage(
-        `Error al enviar el correo ${(error as Error).message}`
+        `Error al enviar el correo: ${(error as Error).message}`
       );
       setSeverity("error");
+    } finally {
+      setLoading(false);
+      setOpenSnackbar(true);
     }
-    setOpenSnackbar(true);
   };
 
   return (
@@ -69,21 +71,16 @@ export default function EmailPage() {
         </Typography>
 
         <form onSubmit={handleSubmit}>
-          <FormControl fullWidth sx={{ mb: 2 }}>
-            <InputLabel>Usuario</InputLabel>
-            <Select
-              value={selectedUser}
-              label="Usuario"
-              onChange={(e) => setSelectedUser(e.target.value)}
-              required
-            >
-              {usuarios.map((usuario) => (
-                <MenuItem key={usuario.ID} value={usuario.ID}>
-                  {`${usuario.Nombre} ${usuario.Apellidos}`}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <TextField
+            fullWidth
+            type="email"
+            label="Correo Electrónico"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            disabled={loading}
+            sx={{ mb: 2 }}
+          />
 
           <TextField
             fullWidth
@@ -91,6 +88,7 @@ export default function EmailPage() {
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             required
+            disabled={loading}
             sx={{ mb: 2 }}
           />
 
@@ -102,11 +100,22 @@ export default function EmailPage() {
             required
             multiline
             rows={4}
+            disabled={loading}
             sx={{ mb: 3 }}
           />
 
-          <Button type="submit" variant="contained" fullWidth size="large">
-            Enviar Correo
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            size="large"
+            disabled={loading}
+          >
+            {loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              "Enviar Correo"
+            )}
           </Button>
         </form>
       </Paper>
@@ -115,8 +124,13 @@ export default function EmailPage() {
         open={openSnackbar}
         autoHideDuration={6000}
         onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <Alert severity={severity} onClose={() => setOpenSnackbar(false)}>
+        <Alert
+          severity={severity}
+          onClose={() => setOpenSnackbar(false)}
+          variant="filled"
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>

@@ -93,10 +93,7 @@ function createTextContent(deuda: any) {
     ? `Su deuda de $${deuda.MontoDeuda} está vencida por ${Math.abs(deuda.DiasRestantes)} días`
     : `Su deuda de $${deuda.MontoDeuda} vencerá en ${deuda.DiasRestantes} días`;
 
-  return `
-    Notificación de Deuda
-    /* ...existing text content... */
-  `.trim();
+  return mensajeDeuda
 }
 
 function getEmailContent(deuda: any, mensajeDeuda: string) {

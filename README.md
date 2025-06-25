@@ -1,3 +1,105 @@
+# Sistema de Gestión de Cobranzas
+
+Este es un proyecto [Next.js](https://nextjs.org) para la gestión de cobranzas.
+
+## Configuración Inicial
+
+### Requisitos Previos
+
+- Node.js (versión 18 o superior)
+- MySQL (versión 8 o superior)
+- Cuenta de Gmail para envío de correos
+
+### Base de Datos
+
+1. Crear una base de datos MySQL:
+```sql
+CREATE DATABASE cobranzas_db;
+```
+
+2. Ejecutar los scripts de migración (ubicados en `/sql/migrations`).
+
+### Variables de Entorno
+
+1. Crear un archivo `.env.local` en la raíz del proyecto:
+```plaintext
+# Configuración de Base de Datos
+DB_HOST=localhost
+DB_PORT=3306
+DB_USERNAME=root
+DB_PASSWORD=root
+DB_NAME=cobranzas_db
+
+# Configuración de Negocio
+CRON_EXPRESSION='* * * * *'
+
+# Configuración de Email
+SMTP_HOST='smtp.gmail.com'
+SMTP_PORT=465
+EMAIL_USER='tu.correo@gmail.com'
+EMAIL_PASSWORD='tu-contraseña-de-aplicacion'
+```
+
+### Configuración de Gmail
+
+1. Habilitar la verificación en dos pasos en tu cuenta de Gmail
+2. Generar una contraseña de aplicación:
+   - Ir a la Gestión de tu cuenta de Google
+   - Seguridad
+   - Verificación en dos pasos
+   - Contraseñas de aplicación
+3. Usar la contraseña generada en `EMAIL_PASSWORD`
+
+## Instalación
+
+```bash
+# Instalar dependencias
+npm install
+
+# Iniciar servidor de desarrollo
+npm run dev
+```
+
+## Características Principales
+
+- Gestión de deudas y usuarios
+- Notificaciones automáticas por correo
+- Seguimiento de pagos
+- Programación de cobros
+
+## Estructura del Proyecto
+
+```plaintext
+/src
+  /app             # Rutas y páginas
+  /components      # Componentes React
+  /config         # Configuraciones
+  /services       # Servicios (email, db, etc.)
+  /hooks          # Custom hooks
+  /types          # Tipos TypeScript
+```
+
+## Configuración del Cron Job
+
+El sistema utiliza un cron job para enviar notificaciones automáticas. La expresión por defecto `* * * * *` ejecuta la tarea cada minuto. 
+
+Ejemplos de configuración:
+- `0 9 * * 1`: Todos los lunes a las 9 AM
+- `0 9 * * *`: Todos los días a las 9 AM
+- `0 9 1 * *`: El día 1 de cada mes a las 9 AM
+
+## Acceso al Sistema
+
+1. Iniciar el servidor: `npm run dev`
+2. Abrir [http://localhost:3000](http://localhost:3000)
+3. Credenciales por defecto:
+   - Usuario: admin
+   - Contraseña: admin123
+
+## Soporte
+
+Para reportar problemas o sugerir mejoras, por favor crear un issue en el repositorio.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
